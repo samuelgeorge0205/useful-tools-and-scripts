@@ -2,19 +2,19 @@
 $csvPath   = "IPs.csv"          # Input CSV file
 $outputCsv = "PingResults.csv"  # Output CSV file
 
-# Import the CSV file (assuming the column header is 'IP')
+# Import the CSV file (assuming one column is 'IP Address')
 $ipList = Import-Csv -Path $csvPath
+
+# Counter for progress
+$total   = $ipList.Count
+$current = 0
 
 # Create an array to hold results
 $results = @()
 
-# Counter for progress
-$total = $ipList.Count
-$current = 0
-
 foreach ($entry in $ipList) {
     $current++
-    $ip = $entry.IP
+    $ip = $entry.'IP Address'
 
     # Show progress bar
     Write-Progress -Activity "Pinging devices..." -Status "Checking $ip" -PercentComplete (($current / $total) * 100)
@@ -27,12 +27,12 @@ foreach ($entry in $ipList) {
         $status = "NOT REACHABLE"
     }
 
-    # Add result to array with timestamp
-    $results += [PSCustomObject]@{
-        IP        = $ip
-        Status    = $status
-        Timestamp = (Get-Date)
-    }
+    # Clone the original row and add PingStatus
+    $newEntry = $entry | Select-Object *
+    $newEntry | Add-Member -NotePropertyName PingStatus -NotePropertyValue $status
+
+    # Add to results
+    $results += $newEntry
 }
 
 # Export results to CSV
