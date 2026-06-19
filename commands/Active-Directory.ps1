@@ -18,10 +18,11 @@ Get-DnsServerResourceRecord -ZoneName "foo.com" -Name "foo.proxy" -RRType A -Com
 Where-Object {$_.RecordData.IPv4Address -eq "a.b.c.d"} |
 Remove-DnsServerResourceRecord -ZoneName "foo.com" -ComputerName "foo" -Force
 
-#
+# GEN DNS RECORD DETAILS
 
-Get-DnsServerResourceRecord -ZoneName "foo.com" -ComputerName "foo" |
-Where-Object {$_.HostName -like "foo.proxy*"}
+Get-DnsServerResourceRecord -ZoneName "foo.net" -ComputerName "foo.NET" | ? {$_.HostName -like "foo*"} | fl *
+
+Get-DnsServerResourceRecord -ZoneName "foo.com" -ComputerName "foo" | Where-Object {$_.HostName -like "foo.proxy*"}
 
 #
 
